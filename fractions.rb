@@ -15,7 +15,7 @@ class Expression
   	when '/'
   		solution = @operand_left / @operand_right
   	end
-  	format(solution)
+  	return format(solution)
   end
 
   private
@@ -39,10 +39,13 @@ class Expression
   end
 end
 
-print '? '
-input = gets.chomp
-until input == 'end'
-	expression = Expression.new(input)
-	print "= #{expression.evaluate}\n? "
-	input = gets.chomp
+print prompt = '? '
+until (input = gets.chomp) == 'end'
+	begin
+		expression = Expression.new(input)
+		puts "= #{expression.evaluate}"
+	rescue ZeroDivisionError
+		puts 'Error: Attempting to divide by 0.'
+	end
+		print prompt
 end
