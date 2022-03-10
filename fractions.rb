@@ -14,6 +14,8 @@ class Expression
   		solution = @operand_left * @operand_right
   	when '/'
   		solution = @operand_left / @operand_right
+  	else
+  		raise ArgumentError
   	end
   	return format(solution)
   end
@@ -21,13 +23,21 @@ class Expression
   private
 
   def parse_tokens
+  	raise ArgumentError if @tokens.length != 3
   	@operand_left = Rational(*split_token(@tokens[0]))
   	@operator = @tokens[1]
   	@operand_right = Rational(*split_token(@tokens[2]))
   end
 
   def split_token(token)
-  	token.split('/').map {|n| n.delete('_').to_i}
+  	token.split('/').map do |n|
+  		n.delete!('_')
+  		if n.match(/\A[+-]?\d+\z/)
+  			n.to_i
+  		else
+  			raise ArgumentError
+  		end
+  	end
   end
 
   def format(solution)
@@ -46,6 +56,8 @@ until (input = gets.chomp) == 'end'
 		puts "= #{expression.evaluate}"
 	rescue ZeroDivisionError
 		puts 'Error: Attempting to divide by 0.'
+	rescue ArgumentError
+		puts 'Error: Unexpected input.'
 	end
 		print prompt
 end
