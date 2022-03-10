@@ -1,3 +1,6 @@
+# Expression expects input to be two fractions/integers and a legal operator
+# separated by white space. Raises exceptions for unexpected input and
+# zero division errors.
 class Expression
 	def initialize(input)
   	@tokens = input.split(/\s+/)
@@ -22,6 +25,8 @@ class Expression
 
   private
 
+  # parse_token utilizes Rational class for evaluation. Raises error with
+  # incorrect number of arguments and validates that input is an integer.
   def parse_tokens
   	raise ArgumentError if @tokens.length != 3
   	@operand_left = Rational(*split_token(@tokens[0]))
@@ -29,6 +34,8 @@ class Expression
   	@operand_right = Rational(*split_token(@tokens[2]))
   end
 
+  # split_token returns array [numerator, denominator] for splat.
+  # Ignores underscores and accepts negative integers.
   def split_token(token)
   	token.split('/').map do |n|
   		n.delete!('_')
@@ -40,15 +47,17 @@ class Expression
   	end
   end
 
+  # format reintroduces underscores for printing solution.
   def format(solution)
-  	print = solution.numerator.abs.to_s.chars.join('_')
+  	output = solution.numerator.abs.to_s.chars.join('_')
   	unless solution.denominator.abs == 1
-  		print += "/#{solution.denominator.to_s.chars.join('_')}"
+  		output += "/#{solution.denominator.to_s.chars.join('_')}"
   	end
-  	return solution.negative? ? "-#{print}" : print
+  	return solution.negative? ? "-#{output}" : output
   end
 end
 
+puts "Input expression. Type 'end' to terminate."
 print prompt = '? '
 until (input = gets.chomp) == 'end'
 	begin
